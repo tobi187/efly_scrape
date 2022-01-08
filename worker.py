@@ -1,12 +1,19 @@
 from selenium import webdriver
+from selenium.webdriver.chrome import service
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 import pyperclip
 import pyautogui
 import time
+from pathlib import Path
+import json
 
 CONFIDENCE = 0.7
+
+home_path = str(Path.home())
+
+with open("config.json", "r") as f:
+    chrome_path = json.load(f)
 
 
 class AutoWorker():
@@ -14,10 +21,11 @@ class AutoWorker():
         self.driver = self.configure()
 
     def configure(self):
-        service = Service("chromedriver.exe")
+        # service = Service("chromedriver.exe")
+        service = Service(chrome_path)
         options = webdriver.ChromeOptions()
         options.add_argument(
-            r"user-data-dir=C:\Users\fisch\AppData\Local\Google\Chrome\User Data\Profile 1")
+            r"user-data-dir={}\Local\Google\Chrome\User Data\Profile 1".format(home_path))
         options.add_argument("start-maximized")
         # options.add_argument("disable-infobars")
         return webdriver.Chrome(service=service, options=options)
@@ -30,7 +38,7 @@ class AutoWorker():
 
         self.driver.get(url)
 
-        time.sleep(100)
+        time.sleep(pause)
 
         try:
             x, y, _, _ = pyautogui.locateOnScreen(
@@ -49,8 +57,12 @@ class AutoWorker():
                 pyautogui.click(x + 10, y + 10)
                 print("grey")
                 time.sleep(pause)
+                x, y, _, _ = pyautogui.locateOnScreen(
+                    r"images\xray_only.png", confidence=CONFIDENCE)
+                pyautogui.click(x, y)
+                time.sleep(pause)
             except TypeError:
-                return "False"
+                return "0"
 
         # open field to search on site, search total revenue,
         pyautogui.hotkey("ctrl", "f")
@@ -65,6 +77,8 @@ class AutoWorker():
         time.sleep(.5)
 
         text = pyperclip.paste()
+        if "TOTAL" not in text:
+            return "0"
         return text.split("\n")[1]
 
     def test_if_logged_in(self) -> bool:
@@ -76,6 +90,7 @@ class AutoWorker():
         return current_url != login_url
 
     def login(self, username, password) -> bool:
+        self.driver = self.configure()
         self.driver.get("https://members.helium10.com/user/signin")
         user_input_id = "loginform-email"  # name: LoginForm[email]
         pass_input_id = "loginform-password"  # name: LoginForm[password]
@@ -84,6 +99,17 @@ class AutoWorker():
 
         user_el.send_keys(username)
         pass_el.send_keys(password)
-        self.driver.send_keys(Keys.ENTER)
+        time.sleep(.5)
+        but = self.driver.find_element(
+            By.XPATH, "/html/body/div[2]/div/div/div/form/button")
+        but.click()
         time.sleep(2)
-        return self.driver.get("https://members.helium10.com/user/signin") == "https://members.helium10.com/user/signin"
+        url = self.driver.get("https://members.helium10.com/user/signin")
+        self.driver.quit()
+        return url == "https://members.helium10.com/user/signin"
+
+    def activate(self):
+        self.driver = self.configure()
+
+    def deactivate(self):
+        self.driver.quit()

@@ -43,6 +43,9 @@ def save_data(path, n_col, data, length):
             ws.cell(row=i, column=n_col + 1).value = data[counter]
             counter += 1
 
+    wb.save()
+    wb.close()
+
 
 def action():
     window = sg.Window("Helium Automation", layout)

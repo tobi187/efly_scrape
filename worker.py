@@ -21,11 +21,11 @@ class AutoWorker():
         self.driver = self.configure()
 
     def configure(self):
-        # service = Service("chromedriver.exe")
-        service = Service(chrome_path)
+        service = Service("chromedriver.exe")
+        # service = Service(chrome_path)
         options = webdriver.ChromeOptions()
         options.add_argument(
-            r"user-data-dir={}\Local\Google\Chrome\User Data\Profile 1".format(home_path))
+            r"user-data-dir=C:\Users\fisch\AppData\Local\Google\Chrome\User Data\Profile 1")
         options.add_argument("start-maximized")
         # options.add_argument("disable-infobars")
         return webdriver.Chrome(service=service, options=options)

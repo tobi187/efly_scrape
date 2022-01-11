@@ -43,7 +43,7 @@ def save_data(path, n_col, data, length):
             ws.cell(row=i, column=n_col + 1).value = data[counter]
             counter += 1
 
-    wb.save()
+    wb.save(path)
     wb.close()
 
 
@@ -83,7 +83,7 @@ def action():
                             win2.close()
                             break
                         else:
-                            sg.PopupError("Sorry etwas hat nicht funtioniert")
+                            sg.PopupError("Sorry etwas hat nicht  ")
                             exit()
             urls, row_nr, path, total_len = get_data(values["file"])
             start_time = datetime.now()

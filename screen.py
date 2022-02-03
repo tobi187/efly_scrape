@@ -1,8 +1,7 @@
 import PySimpleGUI as sg
 
 layout = [
-    [sg.Text("Helium Automation"), sg.Button(
-        "WebConfig", key="web"), sg.Button("Einstellungen")],
+    [sg.Text("Helium Automation"), sg.Button("WebConfig", key="web")],
     [sg.Text('Filename')],
     [sg.Input("", key="file"), sg.FileBrowse()],
     [sg.OK(key="Start"), sg.Cancel()]

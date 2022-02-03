@@ -1,5 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.chrome import service
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 import pyperclip
@@ -13,22 +12,26 @@ CONFIDENCE = 0.7
 home_path = str(Path.home())
 
 with open("config.json", "r") as f:
-    chrome_path = json.load(f)
+    config_data = json.load(f)
+    chrome_exe = config_data["CHROME_EXECUTABLE"]
+    chrome_profile = config_data["CHROME_PROFILE"]
 
 
-class AutoWorker():
+class AutoWorker:
     def __init__(self) -> None:
         self.driver = self.configure()
 
-    def configure(self):
-        service = Service("chromedriver.exe")
-        # service = Service(chrome_path)
+    @staticmethod
+    def configure():
+        # service = Service("chromedriver.exe")
+        service = Service(chrome_exe)
         options = webdriver.ChromeOptions()
-        options.add_argument(
-            r"user-data-dir=C:\Users\fisch\AppData\Local\Google\Chrome\User Data\Profile 1")
+        options.add_argument(fr"user-data-dir={chrome_profile}")
         options.add_argument("start-maximized")
         # options.add_argument("disable-infobars")
         return webdriver.Chrome(service=service, options=options)
+
+    # def open_to_conf(self):
 
     def get_total_rev(self, url, long=False) -> str:
         if long:
@@ -37,7 +40,7 @@ class AutoWorker():
             pause = 2
 
         self.driver.get(url)
-
+        pyperclip.copy("0")
         time.sleep(pause)
 
         try:
@@ -66,7 +69,7 @@ class AutoWorker():
 
         # open field to search on site, search total revenue,
         pyautogui.hotkey("ctrl", "f")
-        time.sleep(.1)
+        time.sleep(.5)
         pyautogui.typewrite("TOTAL REVENUE")
         time.sleep(.5)
         pyautogui.hotkey("esc")
@@ -79,6 +82,7 @@ class AutoWorker():
         text = pyperclip.paste()
         if "TOTAL" not in text:
             return "0"
+
         return text.split("\n")[1]
 
     def test_if_logged_in(self) -> bool:
@@ -104,9 +108,10 @@ class AutoWorker():
             By.XPATH, "/html/body/div[2]/div/div/div/form/button")
         but.click()
         time.sleep(2)
-        url = self.driver.get("https://members.helium10.com/user/signin")
+        self.driver.get("https://members.helium10.com/user/signin")
+        url = self.driver.current_url
         self.driver.quit()
-        return url == "https://members.helium10.com/user/signin"
+        return url != "https://members.helium10.com/user/signin"
 
     def activate(self):
         self.driver = self.configure()

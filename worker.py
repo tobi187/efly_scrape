@@ -4,10 +4,7 @@ from selenium.webdriver.common.by import By
 import pyperclip
 import pyautogui
 import time
-from pathlib import Path
 import json
-
-home_path = str(Path.home())
 
 with open("config.json", "r") as f:
     config_data = json.load(f)

@@ -1,9 +1,10 @@
+import time
+
 from screen import layout, login_layout
 import PySimpleGUI as sg
 from worker import AutoWorker
 from openpyxl import load_workbook
 from datetime import datetime
-from subprocess import call
 # import json
 
 
@@ -13,7 +14,7 @@ def get_data(path):
     col_nr = 0
     length = 0
     for i in range(1, 100):
-        if ws.cell(row=1, column=i).value == "Schaufenster-link-href-2":
+        if ws.cell(row=1, column=i).value == "Schaufenster-link-href":
             col_nr = i
             break
 
@@ -57,6 +58,12 @@ def action():
         if event == "Cancel":
             window.close()
             break
+        if event == "Test":
+            test_res = AutoWorker().test_confidence("https://www.amazon.de/-/en/s?ie=UTF8&marketplaceID=A1PA6795UKMFR9&me=A2Y45U1SJYRN75")
+            print(test_res)
+            time.sleep(2)
+            continue
+
         if event == "Start":
             worker = AutoWorker()
             if not worker.test_if_logged_in():

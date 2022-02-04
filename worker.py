@@ -7,14 +7,13 @@ import time
 from pathlib import Path
 import json
 
-CONFIDENCE = 0.7
-
 home_path = str(Path.home())
 
 with open("config.json", "r") as f:
     config_data = json.load(f)
     chrome_exe = config_data["CHROME_EXECUTABLE"]
     chrome_profile = config_data["CHROME_PROFILE"]
+    CONFIDENCE = config_data["CONFIDENCE"]
 
 
 class AutoWorker:
@@ -54,18 +53,7 @@ class AutoWorker:
             pyautogui.click(x, y)
             time.sleep(pause)
         except TypeError:
-            try:
-                x, y, _, _ = pyautogui.locateOnScreen(
-                    r"images\helium_grey.png", confidence=CONFIDENCE)
-                pyautogui.click(x + 10, y + 10)
-                print("grey")
-                time.sleep(pause)
-                x, y, _, _ = pyautogui.locateOnScreen(
-                    r"images\xray_only.png", confidence=CONFIDENCE)
-                pyautogui.click(x, y)
-                time.sleep(pause)
-            except TypeError:
-                return "0"
+            return "0"
 
         # open field to search on site, search total revenue,
         pyautogui.hotkey("ctrl", "f")
@@ -92,6 +80,32 @@ class AutoWorker:
         current_url = self.driver.current_url
         self.driver.quit()
         return current_url != login_url
+
+    def test_confidence(self, url):
+        pause = 2
+        self.driver.get(url)
+        pyperclip.copy("0")
+        time.sleep(pause)
+
+        x, y, _, _ = pyautogui.locateOnScreen(
+            r"images\helium_pic.png", confidence=CONFIDENCE)
+        pyautogui.click(x + 10, y + 10)
+        time.sleep(pause)
+
+        x, y, _, _ = pyautogui.locateOnScreen(
+            r"images\xray_only.png", confidence=CONFIDENCE)
+        pyautogui.click(x, y)
+        time.sleep(pause)
+        pyautogui.hotkey("ctrl", "f")
+        time.sleep(.5)
+        pyautogui.typewrite("TOTAL REVENUE")
+        time.sleep(.5)
+        pyautogui.hotkey("esc")
+        time.sleep(.5)
+        pyautogui.hotkey("shiftleft", "shiftright", "down")
+        time.sleep(1)
+        pyautogui.hotkey("ctrl", "c")
+        time.sleep(.5)
 
     def login(self, username, password) -> bool:
         self.driver = self.configure()

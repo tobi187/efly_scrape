@@ -1,4 +1,5 @@
 {
     "CHROME_EXECUTABLE": "chromedriver.exe",
-    "CHROME_PROFILE": "C:\\Users\\fisch\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1"
+    "CHROME_PROFILE": "C:\\Users\\fisch\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1",
+    "CONFIDENCE": 0.5
 }

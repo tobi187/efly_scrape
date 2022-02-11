@@ -15,7 +15,7 @@ with open("config.json", "r") as f:
 
 class AutoWorker:
     def __init__(self) -> None:
-        self.driver = self.configure()
+        self.driver = None  # = self.configure()
 
     @staticmethod
     def configure():
@@ -64,11 +64,19 @@ class AutoWorker:
         pyautogui.hotkey("ctrl", "c")
         time.sleep(.5)
 
-        text = pyperclip.paste()
+        text: str = pyperclip.paste()
         if "TOTAL" not in text:
             return "0"
 
-        return text.split("\n")[1]
+        price = text.split("\n")[1]
+
+        if price == "NaN":
+            return "1"
+
+        if "€" in price:
+            return price[:-1].strip()
+
+        return price.strip()
 
     def test_if_logged_in(self) -> bool:
         login_url = "https://members.helium10.com/user/signin"
@@ -80,6 +88,7 @@ class AutoWorker:
 
     def test_confidence(self, url):
         pause = 2
+        self.driver = self.configure()
         self.driver.get(url)
         pyperclip.copy("0")
         time.sleep(pause)
@@ -102,11 +111,17 @@ class AutoWorker:
         pyautogui.hotkey("shiftleft", "shiftright", "down")
         time.sleep(1)
         pyautogui.hotkey("ctrl", "c")
-        time.sleep(.5)
+        time.sleep(2)
+        self.deactivate()
 
     def login(self, username, password) -> bool:
         self.driver = self.configure()
-        self.driver.get("https://members.helium10.com/user/signin")
+        login_url = "https://members.helium10.com/user/signin"
+        self.driver.get(login_url)
+        time.sleep(2)
+        if self.driver.current_url != login_url:
+            self.driver.quit()
+            return True
         user_input_id = "loginform-email"  # name: LoginForm[email]
         pass_input_id = "loginform-password"  # name: LoginForm[password]
         user_el = self.driver.find_element(by=By.ID, value=user_input_id)
@@ -119,10 +134,10 @@ class AutoWorker:
             By.XPATH, "/html/body/div[2]/div/div/div/form/button")
         but.click()
         time.sleep(2)
-        self.driver.get("https://members.helium10.com/user/signin")
+        self.driver.get(login_url)
         url = self.driver.current_url
         self.driver.quit()
-        return url != "https://members.helium10.com/user/signin"
+        return url != login_url
 
     def activate(self):
         self.driver = self.configure()

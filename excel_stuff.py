@@ -41,23 +41,23 @@ def save_data(path, n_col, data, length):
     wb.close()
 
 
-def check_for_fails() -> list[int]:
+def check_for_fails(data: list[str]) -> list[int]:
     # get indexes of every "0" el (not found)
-    # null_indexes = [i for i in range(len(data)) if data[i] == "0"]
-    null_indexes = [2, 7, 19, 20, 44, 45, 46, 47, 48, 49, 59, 61, 84, 99, 107, 108, 109, 110, 111, 144]
+    null_indexes = [i for i in range(len(data)) if data[i] == "0"]
     elements_to_del = []
-    for index, null_ind in enumerate(null_indexes[2:-2]):
-        if null_indexes[index - 1] == (null_ind - 2) and null_indexes[index] == (null_ind - 1):
-            elements_to_del.append(null_ind)
-        elif null_indexes[index + 3] == (null_ind + 2) and null_indexes[index + 2] == (null_ind + 1):
+    counter = 2
+    for null_ind in null_indexes[2:-2]:
+        if null_indexes[counter - 1] == (null_ind - 1) and null_indexes[counter - 2] == (null_ind - 2):
+            counter += 1
+            continue
+        elif null_indexes[counter + 1] == (null_ind + 1) and null_indexes[counter + 2] == (null_ind + 2):
+            counter += 1
+            continue
+        else:
+            counter += 1
             elements_to_del.append(null_ind)
 
     for el in elements_to_del:
         null_indexes.remove(el)
 
     return null_indexes[2:]
-
-
-print(check_for_fails())
-
-# data: list[str]

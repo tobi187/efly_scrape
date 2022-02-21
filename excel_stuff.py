@@ -7,7 +7,7 @@ def get_data(path):
     col_nr = 0
     length = 0
     for i in range(1, 100):
-        if ws.cell(row=1, column=i).value == "Schaufenster-link-href":
+        if ws.cell(row=1, column=i).value == "Schaufenster-link-href-2":
             col_nr = i
             break
 

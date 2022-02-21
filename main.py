@@ -26,6 +26,7 @@ def action():
             # pass_he = ""
             win2 = sg.Window("Login", login_layout)
             ev2, val2 = win2.read()
+
             while True:
                 if ev2 == sg.WINDOW_CLOSED:
                     exit()
@@ -36,30 +37,27 @@ def action():
                     pass_he = val2["pass"]
                     win2.close()
                     break
-                    # if worker.login(user_he, pass_he):
-                    #     win2.close()
-                    #     break
-                    # else:
-                    #     sg.PopupError("Sorry etwas hat nicht funktioniert")
-                    #     exit()
+
             urls, row_nr, path, total_len = get_data(values["file"])
             start_time = datetime.now()
             total_revs = []
-            # worker.activate()
+            worker.activate()
+
             for index, li in enumerate(urls):
                 if index % 49 == 0:
-                    worker.login(user_he, pass_he)
-                    worker.activate()
+                    worker.login(user_he, pass_he, start_close=False)
                 res = worker.get_total_rev(li)
                 if res == "0":
                     res = worker.get_total_rev(li, long=True)
                 total_revs.append(res)
-            worker.login(user_he, pass_he)
+
+            worker.login(user_he, pass_he, start_close=False)
             indices_of_fails = check_for_fails(total_revs)
-            worker.activate()
+
             for entry in indices_of_fails:
-                total_revs[entry] = worker.get_total_rev(urls[entry])
+                total_revs[entry] = worker.get_total_rev(urls[entry], long=True)
             worker.deactivate()
+
             save_data(path, row_nr, total_revs, total_len)
             total_time = datetime.now() - start_time
             sg.PopupOK(

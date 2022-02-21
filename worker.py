@@ -60,6 +60,8 @@ class AutoWorker:
         pyautogui.hotkey("esc")
         time.sleep(.5)
         pyautogui.hotkey("shiftleft", "shiftright", "down")
+        time.sleep(.5)
+        pyautogui.hotkey("shiftleft", "shiftright", "down")
         time.sleep(1)
         pyautogui.hotkey("ctrl", "c")
         time.sleep(.5)
@@ -74,7 +76,8 @@ class AutoWorker:
             return "1"
 
         if "€" in price:
-            return price[:-1].strip()
+            price = price.replace("€", "")
+            return price.strip()
 
         return price.strip()
 
@@ -114,13 +117,15 @@ class AutoWorker:
         time.sleep(2)
         self.deactivate()
 
-    def login(self, username, password) -> bool:
-        self.driver = self.configure()
+    def login(self, username, password, start_close=True) -> bool:
+        if start_close:
+            self.driver = self.configure()
         login_url = "https://members.helium10.com/user/signin"
         self.driver.get(login_url)
         time.sleep(2)
         if self.driver.current_url != login_url:
-            self.driver.quit()
+            if start_close:
+                self.driver.quit()
             return True
         user_input_id = "loginform-email"  # name: LoginForm[email]
         pass_input_id = "loginform-password"  # name: LoginForm[password]
@@ -136,7 +141,8 @@ class AutoWorker:
         time.sleep(2)
         self.driver.get(login_url)
         url = self.driver.current_url
-        self.driver.quit()
+        if start_close:
+            self.driver.quit()
         return url != login_url
 
     def activate(self):
